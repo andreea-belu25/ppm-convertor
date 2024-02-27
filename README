@@ -1,0 +1,38 @@
+task1.c -fct used:
+    - check-> check if a node is a leaf or not (if it can be divided or not)
+    - arb_compresie-> form the tree by the tree by the compression tree
+    - Min-> determines the minimum of four values for the minimum level in the tree
+    - niv_min_frunza-> determines the minimum level on which a leaf is located (I considered the most side
+large undivided is the leaf from the minimum level in the tree)
+    - Max-> determines the maximum of four values for the maximum size of a leaf
+    - info_nod_max-> determines the maximum leaf information from the minimum level
+    - display-> additional fee for debugging
+    - NoLevels-> determine the number of levels in the tree
+    - Numara_Frunze-> determines the number of leaves in the tree
+    After the calls, I display the information in a text file.
+
+task2.c - fct used:
+     For requirement 2, I built the compression tree and ran it in width, displaying
+the information requested using the form below.
+     - InitQ-> empty queue initialization
+     - InsQ-> insert into the queue
+     - ExtQ-> extract from queue
+     - DistrQ-> destroy the queue (when I no longer need it)
+
+task3.c:
+     STEP1: pixel queue formation
+     STEP2: compression tree formation starting from the pixel queue
+     STEP3: forming grid matrix for the image
+     STEP4: display image using the matrix
+     STEP5: Pixel queue and tree destructions
+     Fct used:
+         InitQ_pixel, InsQ_pixel, ExtQ_pixel, build_pixel_queue, build_tree, Traverse_Tree,
+show_image, destroy, DestroyQ
+
+main.c:
+     - pixel image reading for requirement 1 and requirement 2
+     - factor to integer conversion
+     - treatment of each request:
+         -calls, displays, removals and opening/closing of files
+
+
