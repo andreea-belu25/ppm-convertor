@@ -1,12 +1,12 @@
 Quadtree Image Compression
-
+----
 A C implementation of quadtree-based image compression and decompression for PPM format images.
 
 Project Structure
-
+----
 
 task1.c - Compression Tree Analysis
-
+---
 Core compression tree building and analysis functions:
 
 check -- determines if a node should be a leaf based on color variance threshold
