@@ -1,9 +1,8 @@
-/*BELU ANDREEA-DANIELA 314CB*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//  primele doua structuri sunt pt imagine
+//  first two structures are for image declaration
 typedef struct {
     unsigned char type;
     unsigned char red, green, blue;
@@ -14,7 +13,7 @@ typedef struct {
     PPMPixel *data;
 } PPMImage;
 
-//  definire arbore
+//  define tree
 typedef struct nod {
     PPMPixel info;
     unsigned int dim;
@@ -23,24 +22,24 @@ typedef struct nod {
 
 } TNod, *TArb;
 
-//  definire lista simplu inlantuita pt coada pt task2
+//  define simple list for the queue used at task 2
 typedef struct celula {
     struct celula *urm;
     TArb info;
 } TCelula, *TLista;
 
-//  definire coada pt task2
+//  define queue for task 2
 typedef struct coada {
     TLista inc, sf;
 } TCelulaCoada, *TCoada;
 
-//  definire lista simplu inlantuita pt coada pt task3
+//  define simple list for the queue used at task 3
 typedef struct celula_pixel {
     struct celula_pixel *urm;
     PPMPixel info;
 } TCelula_pixel, *TLista_pixel;
 
-//  definire coada pt task3
+//  define queue for task 3
 typedef struct coada_pixel {
     TLista_pixel inc, sf;
 } TCelulaCoada_pixel, *TCoada_pixel;
