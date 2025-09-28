@@ -1,38 +1,70 @@
-task1.c -fct used:
-    - check-> check if a node is a leaf or not (if it can be divided or not)
-    - arb_compresie-> form the tree by the tree by the compression tree
-    - Min-> determines the minimum of four values for the minimum level in the tree
-    - niv_min_frunza-> determines the minimum level on which a leaf is located (I considered the most side
-large undivided is the leaf from the minimum level in the tree)
-    - Max-> determines the maximum of four values for the maximum size of a leaf
-    - info_nod_max-> determines the maximum leaf information from the minimum level
-    - display-> additional fee for debugging
-    - NoLevels-> determine the number of levels in the tree
-    - Numara_Frunze-> determines the number of leaves in the tree
-    After the calls, I display the information in a text file.
+Quadtree Image Compression
 
-task2.c - fct used:
-     For requirement 2, I built the compression tree and ran it in width, displaying
-the information requested using the form below.
-     - InitQ-> empty queue initialization
-     - InsQ-> insert into the queue
-     - ExtQ-> extract from queue
-     - DistrQ-> destroy the queue (when I no longer need it)
+A C implementation of quadtree-based image compression and decompression for PPM format images.
 
-task3.c:
-     STEP1: pixel queue formation
-     STEP2: compression tree formation starting from the pixel queue
-     STEP3: forming grid matrix for the image
-     STEP4: display image using the matrix
-     STEP5: Pixel queue and tree destructions
-     Fct used:
-         InitQ_pixel, InsQ_pixel, ExtQ_pixel, build_pixel_queue, build_tree, Traverse_Tree,
-show_image, destroy, DestroyQ
+Project Structure
 
-main.c:
-     - pixel image reading for requirement 1 and requirement 2
-     - factor to integer conversion
-     - treatment of each request:
-         -calls, displays, removals and opening/closing of files
+task1.c - Compression Tree Analysis
+Core compression tree building and analysis functions:
 
+check -- determines if a node should be a leaf based on color variance threshold
+arb_compresie -- constructs the compression tree using recursive quadtree subdivision
+Min -- finds minimum value among four inputs for level calculations
+niv_min_frunza -- determines the minimum level containing any leaf node
+Max -- finds maximum value among four inputs for size calculations
+info_nod_max -- retrieves maximum leaf dimension from the minimum level
+afisare -- debugging function for tree visualization
+NrNiveluri -- calculates total number of levels in the tree
+Numara_Frunze -- counts total number of leaf nodes in the tree
 
+Output: Text file containing tree statistics (levels, leaf count, maximum undivided block size)
+
+task2.c - Binary Tree Serialization
+Queue-based breadth-first tree traversal for binary output:
+
+InitQ -- initializes empty queue for tree traversal
+InsQ -- enqueues tree nodes for processing
+ExtQ -- dequeues nodes during traversal
+DistrQ -- deallocates queue memory when finished
+
+Process: Builds compression tree and serializes it in breadth-first order to binary file
+
+task3.c - Image Decompression
+Complete decompression pipeline from binary file to PPM image:
+Step 1: Pixel queue formation
+
+InitQ_pixel -- initializes pixel queue from compressed file
+InsQ_pixel -- enqueues pixels during file reading
+ExtQ_pixel -- dequeues pixels during tree construction
+
+Step 2: Tree reconstruction
+
+construieste_coada_pixeli -- reads compressed file and builds pixel queue
+construieste_arbore -- reconstructs tree structure from pixel queue
+
+Step 3: Grid matrix formation
+
+Parcurge_Arb -- traverses tree to fill pixel grid matrix
+
+Step 4: Image output
+
+afisare_imagine -- writes reconstructed image to PPM file
+
+Step 5: Memory cleanup
+
+distruge -- deallocates tree memory
+DistrugereQ -- deallocates pixel queue memory
+
+main.c - Command Line Interface
+Program entry point handling three operation modes:
+Common Operations:
+
+PPM image file reading and validation
+Command line argument parsing and factor conversion
+File I/O management and error handling
+
+Operation Modes:
+
+-c1 <factor> <input.ppm> <output.txt> -- compress and analyze (text output)
+-c2 <factor> <input.ppm> <output.bin> -- compress to binary format
+-d <input.bin> <output.ppm> -- decompress binary file to image
