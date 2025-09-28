@@ -1,7 +1,6 @@
-/*BELU ANDREEA-DANIELA 314CB*/
 #include "header.h"
 
-//  initializare coada pixeli
+// Initialize pixel queue
 TCoada_pixel InitQ_pixel(void)
 {
 	TCoada_pixel c = (TCoada_pixel)calloc(1, sizeof(TCelulaCoada_pixel));
@@ -10,93 +9,112 @@ TCoada_pixel InitQ_pixel(void)
 		return NULL;
 	return c;
 }
-//  inserare pixel intr-o coada de pixeli
+
+// Insert pixel into a pixel queue
 void InsQ_pixel(TCoada_pixel c, PPMPixel x)
 {
-	//  aloc spatiu pentru o celula noua in coada
+	// Allocate space for a new cell in queue
 	TLista_pixel aux1 = (TLista_pixel)calloc(1, sizeof(TCelula_pixel));
 	if (!aux1)
 		return;
-	//  copiez pixelul
+		
+	// Copy pixel
 	aux1->info = x;
-	//  e prima celula pe care urmeaza sa o adaug
+	
+	// It's the first cell I'm about to add
 	if (c->inc == NULL)
 		c->inc = aux1;
-	//  altfel, o leg la ultima celula adaugata in coada
+	// Otherwise, link it to last cell added in queue
 	else
 		c->sf->urm = aux1;
-	//  modific sfarsitul cozii
+		
+	// Modify queue end
 	c->sf = aux1;
 }
+
 PPMPixel ExtQ_pixel(TCoada_pixel c)
 {
-	//  salvez prima celula din coada
+	// Save first cell from queue
 	TLista_pixel aux = c->inc;
 	PPMPixel p = aux->info;
-	//  modificare varf coada
+	
+	// Modify queue front
 	c->inc = aux->urm;
-	//  o singura valoare in coada = > coada vida
+	
+	// Single value in queue => empty queue
 	if (c->inc == NULL)
 		c->sf = NULL;
-	//  eliberez spatiul alocat pt prima celula din coada
+		
+	// Free space allocated for first cell in queue
 	free(aux);
-	// returnez info din prima celula din coada (de tip pixel)
+	
+	// Return info from first cell in queue (pixel type)
 	return p;
 }
+
 void construieste_coada_pixeli(TCoada_pixel c, FILE *read)
 {
 	unsigned char type;
+	
 	while (fread(&type, sizeof(unsigned char), 1, read)) {
 		PPMPixel pixel;
 		pixel.type = type;
+		
 		if (pixel.type == 0) {
-		//  daca tipul pixelului citit e 0 => e rad => nu are pixeli de culoare
+			// If pixel type read is 0 => it's root => has no color pixels
 			pixel.red = 0;
 			pixel.green = 0;
 			pixel.blue = 0;
 		} else {
-		//  tip pixel = 1 => e frunza => are pixeli de culoare
-		//  pe care ii citesc din fisier
+			// Pixel type = 1 => it's leaf => has color pixels
+			// which I read from file
 			fread(&pixel.red, sizeof(unsigned char), 1, read);
 			fread(&pixel.green, sizeof(unsigned char), 1, read);
 			fread(&pixel.blue, sizeof(unsigned char), 1, read);
 		}
-		//  dupa ce am pus inf unui pixel => il inserez in coada de pixeli
+		
+		// After I put info to a pixel => I insert it in pixel queue
 		InsQ_pixel(c, pixel);
 	}
 }
-//  pt a construi arborele ma folosesc de o coada in care pun pixelii cititi
+
+// To build the tree I use a queue where I put the read pixels
 TArb construieste_arbore(TCoada_pixel c, TArb r)
 {
-	//  intra pe primul if prima data si creeaza rad intregului arbore
+	// Enters first if the first time and creates root of entire tree
 	if (r == NULL) {
 		PPMPixel y = ExtQ_pixel(c);
-		//  aloc o celula de tip arbore in care pun inf din pixelul extras
+		// Allocate a tree type cell where I put info from extracted pixel
 		TArb aux = (TArb)calloc(1, sizeof(TNod));
 		if (!aux)
 			return NULL;
+			
 		aux->info.type = y.type;
 		aux->info.red = y.red;
 		aux->info.green = y.green;
 		aux->info.blue = y.blue;
-		//  pentru creare legaturi
+		
+		// For creating connections
 		return aux;
 	}
-	//  sunt la o rad => tipul e 0 =>
-	//  are 4 fii pe care ii creez si ii leg la radacina
+	
+	// I'm at a root => type is 0 =>
+	// has 4 children which I create and link to root
 	if (r->info.type == 0) {
 		r->fiu1 = construieste_arbore(c, r->fiu1);
 		r->fiu2 = construieste_arbore(c, r->fiu2);
 		r->fiu3 = construieste_arbore(c, r->fiu3);
 		r->fiu4 = construieste_arbore(c, r->fiu4);
 	}
-	//  returnez arborele creat
+	
+	// Return created tree
 	return r;
 }
+
 void Parcurge_Arb(TArb a, PPMPixel **grid, int x, int y, int lat)
 {
-	//  construire imagine => creare arbore si apoi matrice
-	//  daca e frunza => un patrat din matrice va avea aceleasi info
+	// Build image => create tree and then matrix
+	// If it's leaf => a square from matrix will have same info
 	if (a->info.type == 1) {
 		for (int i = x; i < x + lat; i++) {
 			for (int j = y; j < y + lat; j++) {
@@ -106,25 +124,29 @@ void Parcurge_Arb(TArb a, PPMPixel **grid, int x, int y, int lat)
 				grid[i][j].blue = a->info.blue;
 			}
 		}
-		//  iesire din recursivitate
+		// Exit from recursion
 		return;
 	}
-	//  daca sunt la o rad => inaintez in arbore pana dau de frunze
+	
+	// If I'm at a root => I advance in tree until I find leaves
 	Parcurge_Arb(a->fiu1, grid, x, y, lat/2);
 	Parcurge_Arb(a->fiu2, grid, x, y + lat/2, lat/2);
 	Parcurge_Arb(a->fiu3, grid, x + lat/2, y + lat/2, lat/2);
 	Parcurge_Arb(a->fiu4, grid, x + lat/2, y, lat/2);
 }
+
 void afisare_imagine(PPMPixel **grid, unsigned int dim, const char *filename)
 {
-	// se scrie in fisier binar imaginea
+	// Write image to binary file
 	FILE *write = fopen(filename, "wb");
 	if (!write)
 		return;
+		
 	fprintf(write, "P6\n");
 	fprintf(write, "%u %u\n", dim, dim);
 	fprintf(write, "255\n");
-	//  afisare matrice creata la pasul anterior
+	
+	// Display matrix created in previous step
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
 			fwrite(&grid[i][j].red, sizeof(unsigned char), 1, write);
@@ -132,31 +154,37 @@ void afisare_imagine(PPMPixel **grid, unsigned int dim, const char *filename)
 			fwrite(&grid[i][j].blue, sizeof(unsigned char), 1, write);
 		}
 	}
-	// inchid fisierul binar in care am scris info
+	
+	// Close binary file where I wrote info
 	fclose(write);
 }
-//  fct pentru eliberarea spatiului ocupat de un arb cuaternar
+
+// Function for freeing space occupied by a quaternary tree
 void distruge(TArb r)
 {
 	if (!r)
 		return;
+		
 	distruge(r->fiu1);
 	distruge(r->fiu2);
 	distruge(r->fiu3);
 	distruge(r->fiu4);
-	free (r);
+	free(r);
 }
-//  fct pentru distrugerea cozii de pixeli
+
+// Function for destroying pixel queue
 void DistrugereQ(TCoada_pixel c)
 {
 	TLista_pixel p = c->inc, aux = c->inc;
-	//  parcurg coada
+	
+	// Traverse queue
 	while (p) {
 		aux = p;
 		p = p->urm;
 		free(aux);
 	}
+	
 	free(c);
-	//  ma asigur ca a devenit NULL pointerul catre coada
+	// I ensure the pointer to queue became NULL
 	c = NULL;
 }
