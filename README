@@ -2,6 +2,7 @@ Quadtree Image Compression
 
 A C implementation of quadtree-based image compression and decompression for PPM format images.
 
+
 Project Structure
 
 task1.c - Compression Tree Analysis
